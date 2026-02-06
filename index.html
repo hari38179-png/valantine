@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Be My Valentine? ❤️</title>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            touch-action: manipulation;
+        }
+
+        body {
+            /* dynamic viewport height (dvh) prevents mobile browser UI bugs */
+            height: 100dvh; 
+            width: 100vw;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background:  radial-gradient(at 0% 0%, #ff9a9e 0%, transparent 50%),
+                        radial-gradient(at 100% 0%, #fad0c4 0%, transparent 50%),
+                        radial-gradient(at 100% 100%, #ffdde1 0%, transparent 50%),
+                        radial-gradient(at 0% 100%, #ee9ca7 0%, transparent 50%);
+            background-color: #ffafbd;
+            font-family: 'Poppins', sans-serif;
+            overflow: auto; /* Prevents scrolling when button moves */
+            position: relative;
+        }
+
+        .container {
+            text-align: center;
+            background: rgba(255, 255, 255, 0.25);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            padding: 2rem;
+            border-radius: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            max-width: 400px;
+            width: 90%;
+            z-index: 10;
+        }
+
+        h1 { 
+            color: #ffffff; 
+            font-size: clamp(1.5rem, 6vw, 2.2rem); 
+            margin-bottom: 2rem;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .btn-group {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            min-height: 60px;
+        }
+
+        button {
+            padding: 12px 28px;
+            font-size: 1rem;
+            font-weight: 600;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+            box-shadow: 0 8px 15px rgba(0,0,0,0.1);
+        }
+
+        #yesBtn { background: #ffffff; color: #ff4d6d; }
+
+        #noBtn {
+            background-color: #ff4d6d;
+            color: white;
+            position: relative; /* Starts in box */
+            z-index: 100;
+            transition: left 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), 
+                        top 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .floating-heart {
+            position: absolute;
+            z-index: 1;
+            opacity: 0.3;
+            animation: float 6s infinite ease-in-out;
+            pointer-events: none;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="floating-heart" style="top: 10%; left: 10%; font-size: 2rem;">❤️</div>
+    <div class="floating-heart" style="bottom: 15%; right: 10%; font-size: 1.5rem;">💖</div>
+
+    <div class="container" id="mainBox">
+        <h1 id="question">Will you be my Valentine? ❤️</h1>
+        <div class="btn-group">
+            <button id="yesBtn">Absolutely!</button>
+            <button id="noBtn">No</button>
+        </div>
+    </div>
+
+    <script>
+        const noBtn = document.getElementById('noBtn');
+        const yesBtn = document.getElementById('yesBtn');
+        const question = document.getElementById('question');
+        const mainBox = document.getElementById('mainBox');
+
+        const moveButton = () => {
+            const padding = 30;
+            const box = mainBox.getBoundingClientRect();
+            
+            let newX, newY;
+            let isInsideBox = true;
+
+            // Loop ensures the button never lands "under" the glass container
+            while (isInsideBox) {
+                newX = Math.floor(Math.random() * (window.innerWidth - noBtn.offsetWidth - padding * 2)) + padding;
+                newY = Math.floor(Math.random() * (window.innerHeight - noBtn.offsetHeight - padding * 2)) + padding;
+
+                // Check if the random coordinates are outside the main container's area
+                if (
+                    newX < box.left - 40 || 
+                    newX > box.right + 40 || 
+                    newY < box.top - 40 || 
+                    newY > box.bottom + 40
+                ) {
+                    isInsideBox = false;
+                }
+            }
+
+            noBtn.style.position = 'fixed';
+            noBtn.style.left = `${newX}px`;
+            noBtn.style.top = `${newY}px`;
+        };
+
+        // Laptop Hover
+        noBtn.addEventListener('mouseover', moveButton);
+        
+        // Mobile Touch (fixes the "stuck" error on small screens)
+        noBtn.addEventListener('touchstart', (e) => {
+            e.preventDefault(); 
+            moveButton();
+        });
+
+        yesBtn.addEventListener('click', () => {
+            question.innerText = "Yay! You're mine now! MUTTAIKOSE🌸";
+            noBtn.style.display = 'none';
+            confetti({
+                particleCount: 150,
+                spread: 70,
+                origin: { y: 0.6 },
+                colors: ['#ff4d6d', '#ff8fa3', '#ffffff']
+            });
+        });
+    </script>
+</body>
+</html>
